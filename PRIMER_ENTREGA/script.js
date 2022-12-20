@@ -3,7 +3,7 @@ function calcularMedia(tamanio){
     
     //calculo sumatoria de valores
     for(i=0; i <tamanio; i++){
-        resultado = resultado + Number(prompt("ingrese el valor " + (i+1)));
+        resultado = resultado + Number(prompt("ingrese el valor n° " + (i+1)));
     }
 
     //calculo media
@@ -14,8 +14,9 @@ function mostrarArreglo(tamanio){
     
     let stringValores ="";
     
+    //almaceno valores en un string separado por comas
     for(i=0; i <tamanio; i++){
-        let valor = Number(prompt("ingrese el valor "+(i+1)));
+        let valor = Number(prompt("ingrese el valor n° "+(i+1)));
         stringValores = stringValores + valor + "," ;
         
     }
@@ -23,8 +24,8 @@ function mostrarArreglo(tamanio){
 }
 
 function desviacionEstandar(tamanio){
+    
     //como todavia no vimos arrays limito calculo de la desviacion estandar a solo 1 cifra
-
     let resultado =0;
     let sumatoria =0;
     let media = 0;
@@ -32,7 +33,7 @@ function desviacionEstandar(tamanio){
     
     //calculo media - guardo valores
     for(i=0; i <tamanio; i++){
-        let valor = Number(prompt("ingrese el valor de 1 cifra " + (i+1)));
+        let valor = Number(prompt(`ingrese el valor n° ${(i+1)} de 1 cifra`));
         stringValores = stringValores + valor;
         resultado = resultado + valor;
     }
@@ -47,11 +48,9 @@ function desviacionEstandar(tamanio){
     }
 
     //calculo la varianza
-
     resultado = sumatoria / media;
 
-    //retorno calculo desviación estandar
-
+    //retorno calculo desviación estandar (raiz de la varianza)
     return resultado = Math.sqrt(resultado);
 }
 
@@ -60,21 +59,26 @@ function programa(){
     let operacion = Number(prompt("ingrese 1 para calcular la media, 2 para mostrar arreglo, 3 desviacion estandar de 1 cifra y 0 o vacio para salir"));
 
     do{
-        let n;
+        //al hacer un do...while primero verifico si la opcion es 0 para, en caso de serlo, salir del loop
+        if(operacion ==0){
+            break;
+        }
 
          //verifico si operacion es opcion correcta        
          while(operacion>4){
             alert ("El dígito ingresado no se corresponde con ninguna opción");
             operacion = Number(prompt("ingrese 1 para calcular la media, 2 para mostrar arreglo, 3 desviacion estandar de 1 cifra y 0 o vacio para salir"));
          }
-
+         let n;
          n = Number(prompt("ingrese la cantidad de números con el que va a operar (n)"));
 
-         while(n==0){
+         //verifico si n es menor o igual a 0
+         while(n<=0){
              alert("El tamaño de la muestra debe ser mayor a 0");
              n = Number(prompt("ingrese la cantidad de números con el que va a operar (n)"));
          }
 
+         //dependiendo de operacion muestro el resultado
          switch (operacion) {
              case 1: alert( "La media es " + calcularMedia(n));
                  break;
@@ -83,13 +87,14 @@ function programa(){
              case 3: alert("La desviación estándar es : " + desviacionEstandar(n));
                  break;
              }
+        
+        //vuelvo a consultar por otra operación
         operacion = Number(prompt("ingrese 1 para calcular la media, 2 para mostrar arreglo, 3 desviacion estandar de 1 cifra o 0 para salir"));
     }
     while(operacion !=0)
-        
+    
+    //Sale del loop y muestra mensaje de saludo
     alert("Hasta luego");
 }
-
-
 
 programa();
