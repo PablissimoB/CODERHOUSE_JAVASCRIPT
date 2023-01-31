@@ -1,0 +1,28 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box; 
+}
+
+body{
+    background-color: black;
+    color: white;
+
+}
+.seccion{
+    margin-top: 5px;
+}
+.lines{
+    border: solid white 2px;
+}
+.scroll {
+    height: 60vh;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+p{
+    margin-top: 5px;
+}
+h2{
+    font-size: medium;
+}
