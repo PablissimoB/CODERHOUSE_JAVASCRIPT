@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="row">
+            <h1 class="text-center"> Statistics Calculator</h1>
+        </div>
+
+        <div class="row seccion">
+            <div class="col-3">
+                <button type="button" class="btn btn-primary" onclick="mostrarOpcion('descriptive');">Descriptive
+                    Statistics</button>
+            </div>
+            <div class="col-3">
+                <button type="button" class="btn btn-primary" onclick="mostrarOpcion('inferential');">Inferential
+                    statistics</button>
+            </div>
+        </div>
+
+        <div class="row seccion" id="descriptive">
+
+            <div class="col-8 lines">
+
+                <div class="seccion">
+                    <h2>Values:</h2>
+                    <p id="values"> </p>
+                </div>
+
+                <div class="seccion">
+                    <button type="button" class="btn btn-warning" onclick="resetearUltimo();mostrarSerie();">Reset Last
+                        Value</button>
+                    <button type="button" class="btn btn-danger"
+                        onclick="resetearArreglo();mostrarArreglosPrevios();mostrarSerie();">Reset All</button>
+                </div>
+
+                <div class="mb-3 seccion">
+                    <div class="row">
+                        <div class="col-3">
+                            <input type="number" class="form-control" id="addValues" placeholder="add value">
+                        </div>
+                        <div class="col-3">
+                            <button type="button" class="btn btn-light"
+                                onclick="agregarElementoArreglo();mostrarSerie();vaciarCaja();">Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="seccion" id="calculos">
+                    <h2>Calculate:</h2>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="media">
+                                <label class="form-check-label" for="media">Mean</label>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="mediana">
+                                <label class="form-check-label" for="mediana">Median</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="moda">
+                                <label class="form-check-label" for="moda">Mode</label>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="ordenada">
+                                <label class="form-check-label" for="ordenada">Ordered Series</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="varianza">
+                                <label class="form-check-label" for="varianza">Variance</label>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="desviacion">
+                                <label class="form-check-label" for="desviacion">Standard Deviation</label>
+                            </div>
+                        </div>
+
+                        <div class="col-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="graphic">
+                                <label class="form-check-label" for="graphic">Dispersion Graph</label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="seccion">
+                    <button type="button" class="btn btn-primary" onclick="calcular();">Calculate</button>
+                </div>
+
+                <div class="seccion">
+                    <h2>Results:</h2>
+                    <p id="results"> </p>
+                </div>
+
+                <div style="display: none;">
+                    <canvas id="chartDescriptive"></canvas>
+                </div>
+            </div>
+            <div class="col-4 lines scroll">
+                <h2>Previous series:</h2>
+                <p id="previous"> </p>
+            </div>
+        </div>
+
+        <div class="row seccion" id="inferential" style="display: none;">
+            <div class="col-12 lines">
+
+
+
+                <div>
+                    <canvas id="chartInferential"></canvas>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="./script.js"></script>
+
+</html>
