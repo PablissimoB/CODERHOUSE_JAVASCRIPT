@@ -1,9 +1,9 @@
-//Zona Variables globales
+//---------------Zona Variables globales---------------
 let arreglo = [];
 let llave = sessionStorage.length;
 
 
-//Zona html
+//---------------Zona html---------------
 function mostrarOpcion(opcion) {
     if (opcion === "descriptive") {
         document.getElementById("descriptive").style.display = 'flex';
@@ -67,7 +67,21 @@ function resetearUltimo() {
     document.getElementById("results").innerHTML = "";
 }
 
-//Zona funciones estadisticas
+function cambiarRadio(){
+    let tipoPoblacion = document.getElementById("poblacion").checked;
+    if(tipoPoblacion){
+        document.getElementById("labelDinamica").innerHTML = "Infinite Population";
+        document.getElementById("populationSize").style.display = 'none';
+    }
+    else{
+        document.getElementById("labelDinamica").innerHTML = "Finite Population";
+        document.getElementById("populationSize").style.display = 'flex';        
+    }
+    
+}
+
+
+//---------------Zona funciones estadistica descriptiva---------------
 function mostrarArreglo() {
     //retorno arreglo ordenado de menor a mayor
     return arreglo.sort((a, b) => a - b);
@@ -189,12 +203,104 @@ function calcular() {
 
     }
 
-
-
-
-
-
     document.getElementById("results").innerHTML = resultado;
+
+}
+
+//---------------Zona funciones estadistica inferencial---------------
+function calcularInferencia (){
+
+    //obtengo valor de los elementos HTML
+    let radio = document.getElementsByName("level");
+    let n = document.getElementById("nI").value;
+    let x = document.getElementById("xI").value;
+    let s = document.getElementById("sI").value;
+    let np = document.getElementById("nP").value;
+    let population = document.getElementById("poblacion").checked;
+    let radio2 = document.getElementsByName("lateral");
+    let laterality;
+    let a;
+
+    //recorro grupo de radio para ver cual es el valor de a
+    for(i = 0; i < radio.length; i++) {
+        if(radio[i].checked){
+            a = radio[i].value;
+        }   
+    }
+
+    //Veo lateralidad
+    for(i = 0; i < radio2.length; i++) {
+        if(radio2[i].checked){
+            laterality = radio2[i].value;
+        }   
+    }
+
+    //Aplico fetch
+    fetch('./confidenceLevel.json')
+    .then(r1 => r1.json())
+
+    //llamo a funcion de calcularInferencia2 y le paso como parametro el array encontrado
+    .then(arregloZ => calcularInferencia2((arregloZ.filter(res => res.a === a)), n,x,s,population,np, laterality))
+    .catch("error");
+
+}
+
+
+
+function calcularInferencia2(arr, n, x, s, population, np, laterality){
+
+    //valor z
+    let z = arr[0].z;
+    let errorStandard;
+    let limiteInferior;
+    let limiteSuperior;
+
+    //verifico si es poblacion finita o infinita
+    
+    if(population){
+        let correccion;
+        //calculo error standard
+        errorStandard = s/ Math. sqrt(n);
+
+        //calculo correccion
+        correccion = errorStandard * z;
+
+        switch(laterality){
+            case "Bilateral": limiteInferior = x - correccion; 
+            limiteSuperior = Number(x) + Number(correccion);
+                            break;
+            case "Derecha": limiteInferior = x - correccion;
+                            break;
+            case "Izquierda": limiteSuperior = Number(x) + Number(correccion);
+                            break;
+        }
+    }
+    else{
+        let correccion;
+        //calculo error standard
+        errorStandard = (s/ Math. sqrt(n)) * (Math. sqrt((np-n)/(np-1)));
+
+        //calculo correccion
+        correccion = errorStandard * z
+
+        switch(laterality){
+            case "Bilateral": limiteInferior = x - correccion; 
+                            limiteSuperior = Number(x) + Number(correccion);
+                            break;
+            case "Derecha": limiteInferior = x - correccion;
+                            break;
+            case "Izquierda": limiteSuperior = Number(x) + Number(correccion);
+                            break;
+        }
+    }
+
+    
+    limiteInferior=limiteInferior>0? limiteInferior :"no tiene limite inferior";
+    limiteSuperior=limiteSuperior>0? limiteSuperior :"no tiene limite superior";
+
+    document.getElementById("resultsI").innerHTML = "<h2> Zona de Aceptacion </h2> <br> Limite Inferior: "+limiteInferior + "<br> Limite Superior: "+ limiteSuperior;
+
+    
 
 }
 

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Statistics Calculator</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
@@ -103,12 +103,6 @@
                             </div>
                         </div>
 
-                        <div class="col-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="graphic">
-                                <label class="form-check-label" for="graphic">Dispersion Graph</label>
-                            </div>
-                        </div>
                     </div>
 
                 </div>
@@ -122,9 +116,6 @@
                     <p id="results"> </p>
                 </div>
 
-                <div style="display: none;">
-                    <canvas id="chartDescriptive"></canvas>
-                </div>
             </div>
             <div class="col-4 lines scroll">
                 <h2>Previous series:</h2>
@@ -135,11 +126,112 @@
         <div class="row seccion" id="inferential" style="display: none;">
             <div class="col-12 lines">
 
-
-
-                <div>
-                    <canvas id="chartInferential"></canvas>
+                <div class="row">
+                    <h2> Size</h2>
+                    <div class="col-2">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="poblacion" onclick="cambiarRadio();">
+                            <label class="form-check-label" for="poblacion" id="labelDinamica"> Finite Population</label>
+                        </div>
+                    </div>
                 </div>
+                
+                <div class="row">
+                    <h2> Laterality</h2>
+                    <div class="col-2">
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" name="lateral" id="bilateral" value="Bilateral" checked>
+                          <label class="form-check-label" for="bilateral">
+                            Bilateral
+                          </label>
+                        </div>
+                  </div>
+                    <div class="col-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="lateral" id="unilateralD" value="Derecha">
+                            <label class="form-check-label" for="unilateralD">
+                                Unilateral-Right
+                            </label>
+                          </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="lateral" id="unilateralI" value="Izquierda">
+                            <label class="form-check-label" for="unilateralI">
+                              Unilateral-Left
+                            </label>
+                          </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <h2> Confidence Level</h2>
+                    <div class="col-2">
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" name="level" id="level1" value="0.99" checked>
+                          <label class="form-check-label" for="level1">
+                            0.99
+                          </label>
+                        </div>
+                  </div>
+                    <div class="col-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="level" id="level5" value="0.95">
+                            <label class="form-check-label" for="level5">
+                              0.95
+                            </label>
+                          </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="level" id="level10" value="0.90">
+                            <label class="form-check-label" for="level10">
+                              0.90
+                            </label>
+                          </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <h2>Measures</h2>
+                    <div class="col-2">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1">Mean</span>
+                            <input type="text" class="form-control" id="xI" placeholder="Mean" aria-label="Mean" aria-describedby="basic-addon1">
+                          </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1">Size</span>
+                            <input type="text" class="form-control" id="nI" placeholder="Size" aria-label="Size" aria-describedby="basic-addon1">
+                          </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1">Standard Deviation</span>
+                            <input type="text" class="form-control" id="sI" placeholder="Standard" aria-label="Standard" aria-describedby="basic-addon1">
+                          </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="input-group mb-3" id="populationSize">
+                            <span class="input-group-text" id="basic-addon1"> Population Size </span>
+                            <input type="text" class="form-control" id="nP" placeholder="Size" aria-label="Size" aria-describedby="basic-addon1">
+                          </div>
+                    </div>
+
+                </div>
+                <div class="seccion">
+                    <button type="button" class="btn btn-primary" onclick="calcularInferencia();">Calculate</button>
+                </div>
+
+                <div class="seccion">
+                    <h2>Results:</h2>
+                    <p id="resultsI"> </p>
+                    <div>
+                        <canvas id="chartInferential"></canvas>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -148,7 +240,7 @@
     </div>
 
 </body>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
 <script src="./script.js"></script>
 
 </html>
