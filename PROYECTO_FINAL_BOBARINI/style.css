@@ -26,3 +26,7 @@ p{
 h2{
     font-size: medium;
 }
+.grafico{
+    width: 100%;
+    max-width: 20vw;
+}

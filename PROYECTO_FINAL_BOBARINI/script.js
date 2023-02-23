@@ -1,6 +1,6 @@
 //---------------Zona Variables globales---------------
 let arreglo = [];
-let llave = sessionStorage.length;
+let llave = localStorage.length;
 
 
 //---------------Zona html---------------
@@ -18,7 +18,12 @@ function mostrarOpcion(opcion) {
 function agregarElementoArreglo() {
     const valor = document.getElementById("addValues").value;
     if (valor.isNaN || valor == "") {
-        alert("no ha introducido un numero");
+        Swal.fire({
+            icon: 'error',
+            background: 'black',
+            text: "No ha introducido un numero",
+            confirmButtonColor: 'red'
+        });
     }
     else {
         arreglo.push(valor);
@@ -33,10 +38,10 @@ function mostrarArreglosPrevios() {
     //creo array para almacenar temporalmente arreglos previos
     let arregloMostrar = [];
 
-    //recorro sessionStorage
-    for (let i = 1; i < sessionStorage.length + 1; i++) {
-        //agrego cada elemento de sessionStorage al array temporal con boton para restaurar
-        arregloMostrar.push(sessionStorage.getItem(i), "<button type='button' class='btn btn-primary' onclick='restaurar(" + i + ");'>Restore</button>");
+    //recorro localStorage
+    for (let i = 1; i < localStorage.length + 1; i++) {
+        //agrego cada elemento de localStorage al array temporal con boton para restaurar
+        arregloMostrar.push(localStorage.getItem(i), "<button type='button' class='btn btn-primary' onclick='restaurar(" + i + ");'>Restore</button>");
     }
     //muestro en previous el arreglo separado por espacios
     document.getElementById("previous").innerHTML = arregloMostrar.join("<br>");
@@ -46,7 +51,7 @@ function mostrarArreglosPrevios() {
 
 function restaurar(valor) {
     //reemplazo arreglo 
-    arreglo = sessionStorage.getItem(valor).split(",");
+    arreglo = localStorage.getItem(valor).split(",");
     mostrarSerie();
     document.getElementById("results").innerHTML = "";
 }
@@ -57,7 +62,7 @@ function vaciarCaja() {
 
 function resetearArreglo() {
     llave++;
-    sessionStorage.setItem(llave, arreglo)
+    localStorage.setItem(llave, arreglo)
     arreglo = [];
     document.getElementById("results").innerHTML = "";
 }
@@ -67,17 +72,70 @@ function resetearUltimo() {
     document.getElementById("results").innerHTML = "";
 }
 
-function cambiarRadio(){
+function cambiarRadio() {
     let tipoPoblacion = document.getElementById("poblacion").checked;
-    if(tipoPoblacion){
+    if (tipoPoblacion) {
         document.getElementById("labelDinamica").innerHTML = "Infinite Population";
         document.getElementById("populationSize").style.display = 'none';
     }
-    else{
+    else {
         document.getElementById("labelDinamica").innerHTML = "Finite Population";
-        document.getElementById("populationSize").style.display = 'flex';        
+        document.getElementById("populationSize").style.display = 'flex';
     }
-    
+
+}
+
+function mostrarGrafico(x, limI, limS, a, laterality) {
+
+    //dependiendo de lateralidad se definen valores de y
+    let yValues2;
+    if (laterality == "Bilateral") {
+        yValues2 = [NaN, NaN, Math.round((a / 2 * 100)), 50, Math.round((a / 2 * 100)), NaN, NaN];
+    }
+    else if (laterality == "Derecha") {
+        yValues2 = [10, 25, Math.round((a / 2 * 100), -2), 50, Math.round((a / 2 * 100)), NaN, NaN];
+    }
+    else {
+        yValues2 = [NaN, NaN, Math.round((a / 2 * 100)), 50, Math.round((a / 2 * 100)), 25, 10];
+    }
+
+
+    //calculo 1 deciles, 1 cuartil, limite inferior, media, limite superior, 3 cuartil y 9 decil
+    let xValues1 = [x / 10, x / 2, Math.round(limI * 100) / 100, x, Math.round(limS * 100) / 100, (Number(x) + Number(x / 2)), (Number(x) + Number((x / 10) * 4))];
+
+    //calculo valores de Y (frecuencias absolutas) para las medidas de x
+    let yValues1 = [10, 25, Math.round((a / 2 * 100)), 50, Math.round((a / 2 * 100)), 25, 10];
+
+    //uso de libreria chart
+    let chartInferential = new Chart("chartInferential", {
+        type: "line",
+        data: {
+            labels: xValues1,
+            datasets: [
+                {
+                    data: yValues2,
+                    borderColor: "blue",
+                    backgroundColor: "blue",
+                    fill: true,
+                    label: 'Acceptance',
+
+                }
+                ,
+                {
+                    data: yValues1,
+                    borderColor: "blue",
+                    fill: false,
+                    label: 'Reject',
+                }
+            ]
+
+        },
+
+        options: {
+            legend: { display: true },
+            tooltips: { enabled: false }
+        }
+    });
 }
 
 
@@ -208,7 +266,7 @@ function calcular() {
 }
 
 //---------------Zona funciones estadistica inferencial---------------
-function calcularInferencia (){
+function ejecutarInferencia() {
 
     //obtengo valor de los elementos HTML
     let radio = document.getElementsByName("level");
@@ -221,86 +279,101 @@ function calcularInferencia (){
     let laterality;
     let a;
 
-    //recorro grupo de radio para ver cual es el valor de a
-    for(i = 0; i < radio.length; i++) {
-        if(radio[i].checked){
-            a = radio[i].value;
-        }   
+    if (x.isNaN || x == "" || n.isNaN || n == "" || s.isNaN || s == "") {
+        Swal.fire({
+            icon: 'error',
+            background: 'black',
+            text: "No ha introducido los valores necesarios",
+            confirmButtonColor: 'red'
+        });
+    }
+    else {
+        //recorro grupo de radio para ver cual es el valor de a
+        for (i = 0; i < radio.length; i++) {
+            if (radio[i].checked) {
+                a = radio[i].value;
+            }
+        }
+
+        //Veo lateralidad
+        for (i = 0; i < radio2.length; i++) {
+            if (radio2[i].checked) {
+                laterality = radio2[i].value;
+            }
+        }
+
+        //Aplico fetch
+        fetch('./confidenceLevel.json')
+            .then(r1 => r1.json())
+
+            //llamo a funcion de calcularInferencia2 y le paso como parametro el array encontrado
+            .then(arregloZ => calcularInferencia2((arregloZ.filter(res => res.a === a)), n, x, s, population, np, laterality))
+            .catch("error");
     }
 
-    //Veo lateralidad
-    for(i = 0; i < radio2.length; i++) {
-        if(radio2[i].checked){
-            laterality = radio2[i].value;
-        }   
-    }
 
-    //Aplico fetch
-    fetch('./confidenceLevel.json')
-    .then(r1 => r1.json())
-
-    //llamo a funcion de calcularInferencia2 y le paso como parametro el array encontrado
-    .then(arregloZ => calcularInferencia2((arregloZ.filter(res => res.a === a)), n,x,s,population,np, laterality))
-    .catch("error");
 
 }
 
-
-
-function calcularInferencia2(arr, n, x, s, population, np, laterality){
+//Hace los calculos propiamente dichos
+function calcularInferencia2(arr, n, x, s, population, np, laterality) {
 
     //valor z
     let z = arr[0].z;
+    let a = arr[0].a;
     let errorStandard;
     let limiteInferior;
     let limiteSuperior;
 
     //verifico si es poblacion finita o infinita
-    
-    if(population){
+
+    if (population) {
         let correccion;
         //calculo error standard
-        errorStandard = s/ Math. sqrt(n);
+        errorStandard = s / Math.sqrt(n);
 
         //calculo correccion
         correccion = errorStandard * z;
 
-        switch(laterality){
-            case "Bilateral": limiteInferior = x - correccion; 
-            limiteSuperior = Number(x) + Number(correccion);
-                            break;
-            case "Derecha": limiteInferior = x - correccion;
-                            break;
-            case "Izquierda": limiteSuperior = Number(x) + Number(correccion);
-                            break;
-        }
+        limiteInferior = x - correccion;
+        limiteSuperior = Number(x) + Number(correccion);
+
     }
-    else{
+    else {
         let correccion;
         //calculo error standard
-        errorStandard = (s/ Math. sqrt(n)) * (Math. sqrt((np-n)/(np-1)));
+        errorStandard = (s / Math.sqrt(n)) * (Math.sqrt((np - n) / (np - 1)));
 
         //calculo correccion
         correccion = errorStandard * z
 
-        switch(laterality){
-            case "Bilateral": limiteInferior = x - correccion; 
-                            limiteSuperior = Number(x) + Number(correccion);
-                            break;
-            case "Derecha": limiteInferior = x - correccion;
-                            break;
-            case "Izquierda": limiteSuperior = Number(x) + Number(correccion);
-                            break;
-        }
+        limiteInferior = x - correccion;
+        limiteSuperior = Number(x) + Number(correccion);
+
     }
 
-    
-    limiteInferior=limiteInferior>0? limiteInferior :"no tiene limite inferior";
-    limiteSuperior=limiteSuperior>0? limiteSuperior :"no tiene limite superior";
+    //muestra resultados y da posibilidad de analizar si un valor esta en la zona de aceptación
 
-    document.getElementById("resultsI").innerHTML = "<h2> Zona de Aceptacion </h2> <br> Limite Inferior: "+limiteInferior + "<br> Limite Superior: "+ limiteSuperior;
+    //genero grafico
+    mostrarGrafico(x, limiteInferior, limiteSuperior, a, laterality);
 
-    
+    //informo limite segun lateralidad
+    switch (laterality) {
+        case "Derecha": limiteInferior = 0;
+            break;
+        case "Izquierda": limiteSuperior = 0;
+            break;
+    }
+    limiteInferior = limiteInferior > 0 ? limiteInferior : "no tiene limite inferior";
+    limiteSuperior = limiteSuperior > 0 ? limiteSuperior : "no tiene limite superior";
+
+    document.getElementById("resultsI").innerHTML =
+        //muestro limites
+        "<h2> Zona de Aceptacion </h2>" +
+        "<br>" +
+        "Limite Inferior: " + limiteInferior +
+        "<br>" +
+        " Limite Superior: " + limiteSuperior;
 
 }
 

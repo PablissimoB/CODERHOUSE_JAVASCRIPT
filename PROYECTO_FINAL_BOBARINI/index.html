@@ -221,15 +221,18 @@
 
                 </div>
                 <div class="seccion">
-                    <button type="button" class="btn btn-primary" onclick="calcularInferencia();">Calculate</button>
+                    <button type="button" class="btn btn-primary" onclick="ejecutarInferencia();">Calculate</button>
                 </div>
 
                 <div class="seccion">
                     <h2>Results:</h2>
+                        
+                        <div>
+                            <canvas id='chartInferential' class='grafico'></canvas>
+                        </div>
                     <p id="resultsI"> </p>
-                    <div>
-                        <canvas id="chartInferential"></canvas>
-                    </div>
+
+                        
                 </div>
 
             </div>
@@ -240,7 +243,8 @@
     </div>
 
 </body>
-<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="./script.js"></script>
 
 </html>
